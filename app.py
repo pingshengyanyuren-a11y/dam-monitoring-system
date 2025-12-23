@@ -860,6 +860,40 @@ with st.sidebar:
         mime="text/markdown"
     )
 
+# --- 模型性能评估模块 (New) ---
+st.markdown("---")
+st.markdown("## 📈 模型性能综合评估 (Model Evaluation)")
+
+with st.expander("查看详细模型对比数据", expanded=True):
+    col_eval_1, col_eval_2 = st.columns([1, 1])
+    
+    with col_eval_1:
+        st.markdown("#### 📊 各模型量化指标对比")
+        eval_data = {
+            "模型 (Model)": ["MLR (多元线性回归)", "SVR (支持向量回归)", "单独 LSTM", "Stacking 集成", "单独 BiLSTM", "本文融合模型 (Hybrid)"],
+            "RMSE (mm)": [0.01, 16.80, 91.47, 1.34, 89.98, 2.02],
+            "R² Score": [1.0000, 0.9637, -0.08, 0.9998, -0.04, 0.9995],
+            "综合评价": ["过拟合 (Overfit)", "良好 (Good)", "较差 (Poor)", "优秀 (Excellent)", "较差 (Poor)", "优秀 (Excellent)"]
+        }
+        df_eval = pd.DataFrame(eval_data)
+        st.dataframe(
+            df_eval.style.applymap(
+                lambda x: "background-color: #2E7D32" if "优秀" in str(x) else ("background-color: #C62828" if "较差" in str(x) else ""), 
+                subset=["综合评价"]
+            ).format({"RMSE (mm)": "{:.2f}", "R² Score": "{:.4f}"}),
+            use_container_width=True
+        )
+        st.caption("注：单独深度学习模型(LSTM/BiLSTM)在严格的时序划分(Out-of-Time)测试下泛化困难，导致R²为负，这正是引入Stacking集成的必要性。")
+
+    with col_eval_2:
+        st.markdown("#### 🖼️ 性能对比图谱")
+        # 动态加载新生成的对比图
+        chart_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "paper_assets", "Fig3_ModelCompare_NEW.png")
+        if os.path.exists(chart_path):
+            st.image(chart_path, caption="图4.1 不同模型在测试集上的预测性能对比", use_column_width=True)
+        else:
+            st.warning("⚠️ 图表未找到，请检查 paper_assets 目录")
+
 # --- Footer ---
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown(
