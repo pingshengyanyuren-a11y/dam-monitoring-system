@@ -321,11 +321,27 @@ with st.expander("🤖 混合专家预测系统 (Hybrid Expert System)", expande
     
     all_nodes = load_all_nodes()
     
-    # 节点选择器（支持搜索）
+    # 节点选择器（关键点置顶）
     st.markdown("**🎯 节点快速选择**")
     
-    # 创建选项列表（格式化显示）
-    node_options = ["手动输入"] + [f"Node {nid} (X:{x:.1f}, Y:{y:.1f})" for nid, (x, y) in all_nodes.items()]
+    # 定义关键监测点（优先显示）
+    key_node_ids = [369, 385, 416, 91, 27, 140, 93, 201, 274, 148]  # 重要节点ID
+    
+    # 创建选项列表（关键点置顶）
+    priority_options = []
+    for nid in key_node_ids:
+        if nid in all_nodes:
+            x, y = all_nodes[nid]
+            # 添加标记便于识别
+            priority_options.append(f"⭐ Node {nid} (X:{x:.1f}, Y:{y:.1f}) - 关键点")
+    
+    # 其余节点
+    other_options = [f"Node {nid} (X:{x:.1f}, Y:{y:.1f})" 
+                     for nid, (x, y) in all_nodes.items() 
+                     if nid not in key_node_ids]
+    
+    # 合并选项：手动输入 + 关键点 + 其他节点
+    node_options = ["手动输入"] + priority_options + other_options
     
     # 使用 session_state 跟踪选择
     if 'selected_node_index' not in st.session_state:
@@ -335,7 +351,7 @@ with st.expander("🤖 混合专家预测系统 (Hybrid Expert System)", expande
         "选择节点或手动输入坐标",
         options=node_options,
         index=st.session_state.selected_node_index,
-        help=f"共{len(all_nodes)}个节点可选，支持输入节点编号快速搜索",
+        help=f"🔝 前{len(priority_options)}个为重点监测点 | 共{len(all_nodes)}个节点 | 支持搜索",
         key="node_selector"
     )
     
@@ -343,8 +359,9 @@ with st.expander("🤖 混合专家预测系统 (Hybrid Expert System)", expande
     if selected_option == "手动输入":
         default_x, default_y = 200.0, 50.0
     else:
-        # 从选项中提取 node_id
-        node_id = int(selected_option.split()[1])
+        # 从选项中提取 node_id（兼容带星标和不带星标的格式）
+        parts = selected_option.split()
+        node_id = int(parts[1] if parts[0] == "⭐" else parts[1])
         default_x, default_y = all_nodes[node_id]
     
     # A. 交互输入区
@@ -601,11 +618,12 @@ with st.expander("🤖 混合专家预测系统 (Hybrid Expert System)", expande
             )
             
             response = client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-V2.5", 
+                model="Qwen/Qwen2.5-7B-Instruct",  # 更快的模型
                 messages=[
-                    {"role": "system", "content": "你是一位大坝安全监测专家。请输出精炼的工程分析文本。"},
+                    {"role": "system", "content": "你是一位大坝安全监测专家。用100字以内简洁分析。"},
                     {"role": "user", "content": prompt}
                 ],
+                max_tokens=200,  # 限制长度提高速度
                 stream=False
             )
             llm_analysis = response.choices[0].message.content
