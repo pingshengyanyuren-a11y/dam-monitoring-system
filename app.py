@@ -547,8 +547,19 @@ with st.expander("🤖 混合专家预测系统 (Hybrid Expert System)", expande
                 pred_lstm = scaler_y.inverse_transform(pred_lstm_scaled.numpy().reshape(-1, 1)).flatten()[0] * 1000  # mm
                 att_weights = att_weights_tensor.squeeze().numpy()
                 
-                # 融合预测
-                final_pred = 0.6 * pred_stacking + 0.4 * pred_lstm
+                # 动态权重融合（从文件加载）
+                try:
+                    weights_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "fusion_weights.pkl")
+                    if os.path.exists(weights_path):
+                        with open(weights_path, 'rb') as f:
+                            weights_data = pickle.load(f)
+                        w_s, w_b = weights_data['w_stacking'], weights_data['w_bilstm']
+                    else:
+                        w_s, w_b = 0.5, 0.5
+                except:
+                    w_s, w_b = 0.5, 0.5
+                
+                final_pred = w_s * pred_stacking + w_b * pred_lstm
                 
                 # 添加双目标变量定义（实时模式简化：只预测沉降）
                 pred_std = abs(pred_stacking - pred_lstm) / 2

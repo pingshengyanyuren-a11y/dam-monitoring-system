@@ -157,9 +157,22 @@ def predict_once_dual(stack_s, stack_h, bilstm, scaler_X, scaler_y_s, scaler_y_h
     pred_lstm_h = scaler_y_h.inverse_transform(out_h.cpu().numpy().reshape(-1, 1)).flatten()[0] * 1000
     att_weights = att_weights_tensor.squeeze().cpu().numpy()
     
-    # 融合
-    final_pred_s = 0.6 * pred_stacking_s + 0.4 * pred_lstm_s
-    final_pred_h = 0.6 * pred_stacking_h + 0.4 * pred_lstm_h
+    # 动态权重融合（基于RMSE倒数法）
+    # 从融合权重文件加载权重（如果存在），否则使用默认值
+    try:
+        weights_path = os.path.join(MODELS_DIR, "fusion_weights.pkl")
+        if os.path.exists(weights_path):
+            with open(weights_path, 'rb') as f:
+                weights_data = pickle.load(f)
+            w_stacking = weights_data['w_stacking']
+            w_bilstm = weights_data['w_bilstm']
+        else:
+            w_stacking, w_bilstm = 0.5, 0.5
+    except:
+        w_stacking, w_bilstm = 0.5, 0.5
+    
+    final_pred_s = w_stacking * pred_stacking_s + w_bilstm * pred_lstm_s
+    final_pred_h = w_stacking * pred_stacking_h + w_bilstm * pred_lstm_h
     
     return (pred_stacking_s, pred_lstm_s, final_pred_s,
             pred_stacking_h, pred_lstm_h, final_pred_h, att_weights)
