@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter
+.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 数据文件（太大）
+*.db
+*.db-shm
+*.db-wal
+data/processed/predictions.db
+
+# 模型文件
+models/*.pkl
+models/*.pth
+
+# 临时文件
+*.log
+*.tmp
+all_nodes.json
+extract_nodes.py
+verification_results.txt
+
+# CatBoost
+catboost_info/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.egg-info/
+dist/
+build/

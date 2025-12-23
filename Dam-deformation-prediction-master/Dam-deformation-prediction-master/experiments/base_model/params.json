@@ -1,0 +1,20 @@
+{
+    "learning_rate": 0.5e-2,
+    "momentum": 0.9,
+    "weight_decay": 1e-4,
+    "batch_size": 5,
+    "lstm_layers": 2,
+    "num_epochs": 100,
+    "lag_days": 8,
+    "for_days": 4,
+    "window_days": 12,
+    "stride_days": 1,
+    "num_series": 33,
+    "cov_dim": 3,
+    "lstm_hidden_dim": 15,
+    "embedding_dim": 10,
+    "sample_times": 200,
+    "lstm_dropout": 0.05,
+    "predict_batch": 5,
+    "split_ratio": 0.8
+}
