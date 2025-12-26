@@ -1,0 +1,18 @@
+# 排除不必要的文件以减小部署包大小
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.venv/
+venv/
+env/
+Dam-deformation-prediction-master/
+docs/
+paper_assets/
+论文图片/
+*.docx
+*.pptx
+*.pdf
+.gitignore
+.DS_Store
+*.log

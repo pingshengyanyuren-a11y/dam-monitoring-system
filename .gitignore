@@ -18,22 +18,51 @@ env/
 *.swp
 *.swo
 
-# 数据文件（太大）
-*.db
-*.db-shm
-*.db-wal
-data/processed/predictions.db
+# ==========================================
+# 部署不需要的文件 - 排除以减小仓库大小
+# ==========================================
 
-# 模型文件
-models/*.pkl
-models/*.pth
+# PPT 和 Word 文档
+*.pptx
+*.docx
+*.pdf
 
-# 临时文件
+# 文档和图片文件夹
+docs/
+论文图片/
+paper_assets/
+
+# 参考项目(不需要上传)
+Dam-deformation-prediction-master/
+
+# 项目文档(保留必要的 README)
+project_docs/
+!project_docs/README.md
+
+# ==========================================
+# 数据文件
+# ==========================================
+# 核心数据库 - 需要上传部署
+# predictions.db (19MB) - 核心预测缓存
+# baseline_predictions.db (0.35MB) - 基线对比数据
+# master_dataset.csv - 历史训练数据
+
+# 排除用户临时数据
+data/processed/user_predictions.db
+
+# 模型文件 - 允许提交(部署需要)
+# models/*.pkl
+# models/*.pth
+
+# ==========================================
+# 临时文件和输出
+# ==========================================
 *.log
 *.tmp
 all_nodes.json
 extract_nodes.py
 verification_results.txt
+outputs/
 
 # CatBoost
 catboost_info/
@@ -46,3 +75,12 @@ Thumbs.db
 *.egg-info/
 dist/
 build/
+
+# 脚本文件(训练脚本不需要部署)
+scripts/
+visualization_scripts/
+analysis/
+legacy_utils/
+organize_files.py
+doc_tools/
+

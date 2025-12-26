@@ -93,16 +93,23 @@ class Visualizer:
         ))
 
         fig.update_layout(
-            title=f'Dam Deformation Contour (Time Step: {time_step}, Value: {value_col})',
+            title=dict(
+                text=f'Dam Deformation Contour (T={time_step})',
+                font=dict(size=16)
+            ),
             xaxis_title='X (m)',
             yaxis_title='Y (m)',
             # 保持 X/Y 等比例，防止变形
             yaxis=dict(
                 scaleanchor="x",
                 scaleratio=1,
+                gridcolor='#333'
             ),
-            width=800,
-            height=600,
+            xaxis=dict(gridcolor='#333'),
+            paper_bgcolor='#0E1117',
+            plot_bgcolor='#0E1117',
+            font=dict(color='#E0E0E0'),
+            margin=dict(l=50, r=50, t=80, b=50)
         )
         
         return fig
